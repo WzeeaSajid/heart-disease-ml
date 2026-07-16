@@ -1,6 +1,6 @@
 import os
 import joblib
-import numpy as np
+
 import gradio as gr
 import pandas as pd
 
@@ -11,13 +11,26 @@ threshold = joblib.load(os.path.join(BASE_DIR, "models", "threshold.joblib"))
 
 def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
     try:
-        vals = {
-            "age": int(age), "sex": int(sex), "cp": int(cp),
-            "trestbps": int(trestbps), "chol": int(chol), "fbs": int(fbs),
-            "restecg": int(restecg), "thalach": int(thalach), "exang": int(exang),
-            "oldpeak": float(oldpeak), "slope": int(slope), "ca": int(ca), "thal": int(thal),
-        }
-        row = pd.DataFrame([vals])
+        age = max(20, min(80, int(age)))
+        sex = int(sex)
+        cp = int(cp)
+        trestbps = max(80, min(200, int(trestbps)))
+        chol = max(100, min(600, int(chol)))
+        fbs = int(fbs)
+        restecg = int(restecg)
+        thalach = max(60, min(220, int(thalach)))
+        exang = int(exang)
+        oldpeak = max(0.0, min(6.2, float(oldpeak)))
+        slope = int(slope)
+        ca = max(0, min(3, int(ca)))
+        thal = int(thal)
+
+        row = pd.DataFrame([{
+            "age": age, "sex": sex, "cp": cp,
+            "trestbps": trestbps, "chol": chol, "fbs": fbs,
+            "restecg": restecg, "thalach": thalach, "exang": exang,
+            "oldpeak": oldpeak, "slope": slope, "ca": ca, "thal": thal,
+        }])
         row["age_chol"] = row["age"] * row["chol"]
         row["thalach_age"] = row["thalach"] / row["age"]
         row["trestbps_chol"] = row["trestbps"] * row["chol"]
@@ -28,11 +41,10 @@ def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak,
 
         proba = pipe.predict_proba(row)[0]
         disease_proba = float(proba[1])
-        no_dis_proba = float(proba[0])
         pred = 1 if disease_proba >= threshold else 0
         confidence = float(proba[pred])
     except Exception:
-        return '<div style="text-align:center;padding:24px;color:#6B7280;font-size:13px;">Please fill in all fields before predicting.</div>'
+        return '<div style="text-align:center;padding:24px;color:#6B7280;font-size:13px;">Invalid input. Please check your values and try again.</div>'
 
     conf_level = "High" if confidence >= 0.75 else ("Moderate" if confidence >= 0.6 else "Low")
 
@@ -123,12 +135,6 @@ footer { display: none !important; }
 """
 
 
-def section(title):
-    return gr.HTML(f"""
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;
-                letter-spacing:.06em;color:#9CA3AF;margin-bottom:12px;">{title}</div>""")
-
-
 with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
 
     gr.HTML("""
@@ -149,6 +155,11 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
             sex = gr.Radio(choices=[("Female", 0), ("Male", 1)], label="Sex", value=1)
 
         with gr.Tab("Clinical"):
+            cp = gr.Dropdown(
+                choices=[("Typical Angina", 1), ("Atypical Angina", 2),
+                         ("Non-Anginal Pain", 3), ("Asymptomatic", 4)],
+                label="Chest Pain Type", value=4,
+            )
             trestbps = gr.Slider(80, 200, value=130, step=1, label="Resting BP (mm Hg)")
             chol = gr.Slider(100, 600, value=240, step=1, label="Cholesterol (mg/dl)")
             fbs = gr.Radio(choices=[("Normal (≤ 120)", 0), ("Elevated (> 120)", 1)], label="Fasting Blood Sugar", value=0)
@@ -158,11 +169,6 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
             )
 
         with gr.Tab("Exercise"):
-            cp = gr.Dropdown(
-                choices=[("Typical Angina", 1), ("Atypical Angina", 2),
-                         ("Non-Anginal Pain", 3), ("Asymptomatic", 4)],
-                label="Chest Pain Type", value=4,
-            )
             thalach = gr.Slider(60, 220, value=150, step=1, label="Max Heart Rate")
             exang = gr.Radio(choices=[("No", 0), ("Yes", 1)], label="Exercise Angina", value=0)
             oldpeak = gr.Number(minimum=0.0, maximum=6.2, value=1.0, step=0.1, label="ST Depression (oldpeak)")
