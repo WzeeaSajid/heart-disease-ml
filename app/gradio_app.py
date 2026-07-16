@@ -160,7 +160,7 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
             )
             thalach = gr.Slider(60, 220, value=150, step=1, label="Max Heart Rate")
             exang = gr.Radio(choices=[("No", 0), ("Yes", 1)], label="Exercise Angina", value=0)
-            oldpeak = gr.Slider(0.0, 6.2, value=1.0, step=0.1, label="ST Depression (oldpeak)")
+            oldpeak = gr.Number(minimum=0.0, maximum=6.2, value=1.0, step=0.1, label="ST Depression (oldpeak)")
             slope = gr.Dropdown(
                 choices=[("Upsloping", 1), ("Flat", 2), ("Downsloping", 3)],
                 label="ST Slope", value=2,
