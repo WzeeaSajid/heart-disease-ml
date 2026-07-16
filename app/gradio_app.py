@@ -167,7 +167,10 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
             )
 
         with gr.Tab("Imaging"):
-            ca = gr.Slider(0, 3, value=0, step=1, label="Major Vessels (0–3)")
+            ca = gr.Dropdown(
+                choices=[("0", 0), ("1", 1), ("2", 2), ("3", 3)],
+                label="Major Vessels (0–3)", value=0,
+            )
             thal = gr.Dropdown(
                 choices=[("Normal", 3), ("Fixed Defect", 6), ("Reversible Defect", 7)],
                 label="Thalassemia", value=3,
