@@ -11,35 +11,39 @@ threshold = joblib.load(os.path.join(BASE_DIR, "models", "threshold.joblib"))
 
 def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
     try:
-        row = pd.DataFrame({
-        "age": [int(age)], "sex": [int(sex)], "cp": [int(cp)],
-        "trestbps": [int(trestbps)], "chol": [int(chol)], "fbs": [int(fbs)],
-        "restecg": [int(restecg)], "thalach": [int(thalach)], "exang": [int(exang)],
-        "oldpeak": [float(oldpeak)], "slope": [int(slope)], "ca": [int(ca)], "thal": [int(thal)],
-    })
-    row["age_chol"]       = row["age"] * row["chol"]
-    row["thalach_age"]    = row["thalach"] / row["age"]
-    row["trestbps_chol"]  = row["trestbps"] * row["chol"]
-    row["age_thalach"]    = row["age"] * row["thalach"]
-    row["oldpeak_thalach"]= row["oldpeak"] * row["thalach"]
-    row["age_bin"]  = pd.cut(row["age"],  bins=[0,40,55,70,100], labels=["0","1","2","3"]).astype(str)
-    row["chol_bin"] = pd.cut(row["chol"], bins=[0,200,240,300,600], labels=["0","1","2","3"]).astype(str)
+        vals = {
+            "age": int(age), "sex": int(sex), "cp": int(cp),
+            "trestbps": int(trestbps), "chol": int(chol), "fbs": int(fbs),
+            "restecg": int(restecg), "thalach": int(thalach), "exang": int(exang),
+            "oldpeak": float(oldpeak), "slope": int(slope), "ca": int(ca), "thal": int(thal),
+        }
+        row = pd.DataFrame([vals])
+        row["age_chol"] = row["age"] * row["chol"]
+        row["thalach_age"] = row["thalach"] / row["age"]
+        row["trestbps_chol"] = row["trestbps"] * row["chol"]
+        row["age_thalach"] = row["age"] * row["thalach"]
+        row["oldpeak_thalach"] = row["oldpeak"] * row["thalach"]
+        row["age_bin"] = pd.cut(row["age"], bins=[0, 40, 55, 70, 100], labels=["0", "1", "2", "3"]).astype(str)
+        row["chol_bin"] = pd.cut(row["chol"], bins=[0, 200, 240, 300, 600], labels=["0", "1", "2", "3"]).astype(str)
 
-    proba          = pipe.predict_proba(row)[0]
-    disease_proba  = float(proba[1])
-    no_dis_proba   = float(proba[0])
-    pred           = 1 if disease_proba >= threshold else 0
-    confidence     = float(proba[pred])
-    conf_level     = "High" if confidence >= 0.75 else ("Moderate" if confidence >= 0.6 else "Low")
+        proba = pipe.predict_proba(row)[0]
+        disease_proba = float(proba[1])
+        no_dis_proba = float(proba[0])
+        pred = 1 if disease_proba >= threshold else 0
+        confidence = float(proba[pred])
+    except Exception:
+        return '<div style="text-align:center;padding:24px;color:#6B7280;font-size:13px;">Please fill in all fields before predicting.</div>'
+
+    conf_level = "High" if confidence >= 0.75 else ("Moderate" if confidence >= 0.6 else "Low")
 
     if pred == 1:
         accent = "#DC2626"
-        label  = "Heart Disease Detected"
-        icon   = "⚠"
+        label = "Heart Disease Detected"
+        icon = "⚠"
     else:
         accent = "#16A34A"
-        label  = "No Heart Disease"
-        icon   = "✓"
+        label = "No Heart Disease"
+        icon = "✓"
 
     return f"""
     <div style="font-family:'Inter',system-ui,sans-serif;max-width:420px;margin:12px auto 0;">
@@ -70,11 +74,6 @@ def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak,
         <strong>For informational purposes only.</strong>
         Not a substitute for professional medical advice.
       </div>
-    </div>"""
-    except Exception:
-        return """
-    <div style="text-align:center;padding:24px;color:#6B7280;font-size:13px;">
-      Please fill in all fields before predicting.
     </div>"""
 
 
