@@ -195,12 +195,15 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
         predict_btn = gr.Button("Predict Risk", variant="primary", scale=3)
 
     with gr.Column():
-        output = gr.HTML(label="Result")
+        output = gr.HTML(value="""
+    <div style="text-align:center;padding:24px;color:#9CA3AF;font-size:13px;">
+      Fill in all 4 tabs and click <strong>Predict Risk</strong> above
+    </div>""")
 
     all_inputs = [age, sex, cp, trestbps, chol, fbs, restecg,
                   thalach, exang, oldpeak, slope, ca, thal]
     predict_btn.click(fn=predict, inputs=all_inputs, outputs=output)
-    clear_btn.add(all_inputs)
+    clear_btn.add(all_inputs + [output])
 
 
 if __name__ == "__main__":
