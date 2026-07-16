@@ -147,6 +147,9 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
       <p style="color:#6B7280;font-size:13px;margin:0;line-height:1.5;">
         RF · XGBoost · LR voting ensemble
       </p>
+      <p style="color:#9CA3AF;font-size:12px;margin:10px 0 0;">
+        Fill in all 4 tabs below, then click Predict
+      </p>
     </div>""")
 
     with gr.Tabs():
