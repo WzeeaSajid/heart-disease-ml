@@ -12,24 +12,17 @@ threshold = joblib.load(os.path.join(BASE_DIR, "models", "threshold.joblib"))
 def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
     try:
         age = max(20, min(80, int(age)))
-        sex = int(sex)
-        cp = int(cp)
         trestbps = max(80, min(200, int(trestbps)))
         chol = max(100, min(600, int(chol)))
-        fbs = int(fbs)
-        restecg = int(restecg)
         thalach = max(60, min(220, int(thalach)))
-        exang = int(exang)
         oldpeak = max(0.0, min(6.2, float(oldpeak)))
-        slope = int(slope)
-        ca = max(0, min(3, int(ca)))
-        thal = int(thal)
+        ca = str(max(0, min(3, int(ca))))
 
         row = pd.DataFrame([{
-            "age": age, "sex": sex, "cp": cp,
-            "trestbps": trestbps, "chol": chol, "fbs": fbs,
-            "restecg": restecg, "thalach": thalach, "exang": exang,
-            "oldpeak": oldpeak, "slope": slope, "ca": ca, "thal": thal,
+            "age": age, "sex": str(int(sex)), "cp": str(int(cp)),
+            "trestbps": trestbps, "chol": chol, "fbs": str(int(fbs)),
+            "restecg": str(int(restecg)), "thalach": thalach, "exang": str(int(exang)),
+            "oldpeak": oldpeak, "slope": str(int(slope)), "ca": ca, "thal": str(int(thal)),
         }])
         row["age_chol"] = row["age"] * row["chol"]
         row["thalach_age"] = row["thalach"] / row["age"]
