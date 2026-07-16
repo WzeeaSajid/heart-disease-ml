@@ -4,6 +4,8 @@ import joblib
 import gradio as gr
 import pandas as pd
 
+pd.set_option("future.infer_string", False)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 pipe      = joblib.load(os.path.join(BASE_DIR, "models", "heart_pipeline.joblib"))
 threshold = joblib.load(os.path.join(BASE_DIR, "models", "threshold.joblib"))
