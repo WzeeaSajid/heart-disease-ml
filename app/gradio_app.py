@@ -18,7 +18,7 @@ def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak,
         chol = max(100, min(600, int(chol)))
         thalach = max(60, min(220, int(thalach)))
         oldpeak = max(0.0, min(6.2, float(oldpeak)))
-        ca = str(max(0, min(3, int(ca))))
+        ca = max(0, min(3, int(ca)))
 
         row = pd.DataFrame([{
             "age": age, "sex": str(int(sex)), "cp": str(int(cp)),
