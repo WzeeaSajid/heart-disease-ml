@@ -10,7 +10,8 @@ threshold = joblib.load(os.path.join(BASE_DIR, "models", "threshold.joblib"))
 
 
 def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
-    row = pd.DataFrame({
+    try:
+        row = pd.DataFrame({
         "age": [int(age)], "sex": [int(sex)], "cp": [int(cp)],
         "trestbps": [int(trestbps)], "chol": [int(chol)], "fbs": [int(fbs)],
         "restecg": [int(restecg)], "thalach": [int(thalach)], "exang": [int(exang)],
@@ -69,6 +70,11 @@ def predict(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak,
         <strong>For informational purposes only.</strong>
         Not a substitute for professional medical advice.
       </div>
+    </div>"""
+    except Exception:
+        return """
+    <div style="text-align:center;padding:24px;color:#6B7280;font-size:13px;">
+      Please fill in all fields before predicting.
     </div>"""
 
 
@@ -186,7 +192,7 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
     all_inputs = [age, sex, cp, trestbps, chol, fbs, restecg,
                   thalach, exang, oldpeak, slope, ca, thal]
     predict_btn.click(fn=predict, inputs=all_inputs, outputs=output)
-    clear_btn.add(all_inputs + [output])
+    clear_btn.add(all_inputs)
 
 
 if __name__ == "__main__":
