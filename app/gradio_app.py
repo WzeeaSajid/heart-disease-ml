@@ -177,19 +177,8 @@ with gr.Blocks(title="Heart Disease Risk Predictor", css=CSS) as demo:
         clear_btn   = gr.ClearButton(value="Clear", scale=1)
         predict_btn = gr.Button("Predict Risk", variant="primary", scale=3)
 
-    output = gr.HTML()
-
-    gr.Examples(
-        examples=[
-            [65, 1, 4, 150, 300, 1, 1, 100, 1, 3.0, 2, 2, 7],
-            [35, 0, 1, 120, 200, 0, 0, 170, 0, 0.0, 1, 0, 3],
-            [55, 1, 3, 140, 250, 0, 1, 130, 0, 1.5, 2, 1, 6],
-            [45, 0, 2, 130, 220, 0, 0, 160, 0, 0.0, 1, 0, 3],
-        ],
-        inputs=[age, sex, cp, trestbps, chol, fbs, restecg,
-                thalach, exang, oldpeak, slope, ca, thal],
-        label="Examples",
-    )
+    with gr.Column():
+        output = gr.HTML(label="Result")
 
     all_inputs = [age, sex, cp, trestbps, chol, fbs, restecg,
                   thalach, exang, oldpeak, slope, ca, thal]
